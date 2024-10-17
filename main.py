@@ -54,10 +54,7 @@ def main():
     # Final update for the GUI after reaching the goal
     if path:
         print(f"Path found: {path}")
-        # Update the GUI to show the final path taken
-        for step in path:
-            grid_display.update_pathfinding_cell(step)
-            time.sleep(0.1)  # Delay for visualization of the path
+        grid_display.draw_final_path(path)  # Draw the blue line representing the final path
     else:
         print("No path found to any goal cell.")
 

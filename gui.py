@@ -69,6 +69,16 @@ class GridDisplay:
         self.canvas.create_rectangle(path_x1, path_y1, path_x2, path_y2, fill='magenta', tags="path_cell")  # Draw pathfinding square
         self.root.update()  # Update the GUI
 
+    def draw_final_path(self, path):
+        """Draw the final path as a blue line after the goal is reached."""
+        for i in range(len(path) - 1):
+            x1 = path[i][0] * self.cell_size + self.cell_size // 2
+            y1 = path[i][1] * self.cell_size + self.cell_size // 2
+            x2 = path[i + 1][0] * self.cell_size + self.cell_size // 2
+            y2 = path[i + 1][1] * self.cell_size + self.cell_size // 2
+            self.canvas.create_line(x1, y1, x2, y2, fill='blue', width=2)  # Draw the blue path line
+        self.root.update()  # Update the GUI to show the line
+
 def display_grid_gui(rows, cols, markers=None, goals=None, walls=None):
     """Create the GUI and handle updates during DFS."""
     grid_display = GridDisplay(rows, cols, markers, goals, walls)
