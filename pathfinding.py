@@ -40,7 +40,6 @@ def dfs(grid, start, goals, update_gui):
                 0 <= neighbor[1] < rows and  # Check row bounds
                 grid[neighbor[1]][neighbor[0]] not in ['W', 'M'] and  # Avoid walls and marker
                 neighbor not in visited):  # Avoid revisiting nodes
-                print(f"Moving to: {neighbor}")
                 stack.append(neighbor)
 
     print("No path to goal found.")

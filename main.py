@@ -29,13 +29,8 @@ def main():
 
     rows, cols, markers, goals, walls = result
 
-    # Print specifications for debugging
-    print_specifications(rows, cols, markers, goals, walls)
-
-    # Create and print the grid for debugging
+    # Create the grid
     grid = create_grid(rows, cols, markers, goals, walls)
-    print("Grid Representation:")
-    print_grid(grid)
 
     # Specify the starting position of the light gray square (the marker cell)
     start_position = (markers[0][0], markers[0][1])
@@ -53,7 +48,6 @@ def main():
 
     # Final update for the GUI after reaching the goal
     if path:
-        print(f"Path found: {path}")
         grid_display.draw_final_path(path)  # Draw the blue line representing the final path
     else:
         print("No path found to any goal cell.")
