@@ -1,102 +1,96 @@
 import sys
-import tkinter as tk
+from file_parser import read_input_file
+from grid import create_grid
+from gui import display_grid_gui
+import pathfinding
+import time
 
-def display_grid_gui(rows, cols, markers=None, goals=None, walls=None, path_cell=None):
-    """Create a tkinter GUI to display the grid based on given rows and columns."""
-    root = tk.Tk()
-    root.title("Grid Visualization")
+def select_algorithm(algorithm_name):
+    """Map the algorithm name to the corresponding function, case-insensitively."""
+    algorithms = {
+        'DFS': pathfinding.dfs,
+        'BFS': pathfinding.bfs,
+        'GBFS': pathfinding.gbfs,
+        'ASTAR': pathfinding.astar
+    }
+    return algorithms.get(algorithm_name.upper(), None)
+
+def convert_path_to_directions(path):
+    directions = []
+    direction_map = {
+        (0, -1): 'up',
+        (0, 1): 'down',
+        (-1, 0): 'left',
+        (1, 0): 'right'
+    }
     
-    # Create a canvas for drawing the grid
-    canvas = tk.Canvas(root, width=cols * 50, height=rows * 50, bg='white')
-    canvas.pack()
+    for i in range(len(path) - 1):
+        current = path[i]
+        next_cell = path[i + 1]
+        move = (next_cell[0] - current[0], next_cell[1] - current[1])
+        
+        if move in direction_map:
+            directions.append(direction_map[move])
+    
+    return directions
 
-    # Draw the grid
-    for row in range(rows):
-        for col in range(cols):
-            x1, y1 = col * 50, row * 50
-            x2, y2 = x1 + 50, y1 + 50
-            
-            # Determine color based on cell type
-            if walls and any((col >= wall_col and col < wall_col + wall_width and
-                              row >= wall_row and row < wall_row + wall_height)
-                             for (wall_col, wall_row, wall_width, wall_height) in walls):
-                color = 'gray'  # Wall
-            elif markers and (col, row) in markers:
-                color = 'red'   # Marker
-            elif goals and (col, row) in goals:
-                color = 'green' # Goal
-            else:
-                color = 'white'  # Empty cell
-
-            # Create rectangle for cell
-            canvas.create_rectangle(x1, y1, x2, y2, fill=color, outline='black')
-
-    # Draw the pathfinding cell if specified
-    if path_cell:
-        path_x1 = path_cell[0] * 50 + 10  # Offset for the smaller square
-        path_y1 = path_cell[1] * 50 + 10
-        path_x2 = path_x1 + 30
-        path_y2 = path_y1 + 30
-        canvas.create_rectangle(path_x1, path_y1, path_x2, path_y2, fill='lightgray', outline='black')
-
-    root.mainloop()
-
-def parse_coordinates(coord_string):
-    """Helper function to parse a string of coordinates in the format (col, row)."""
-    coord_string = coord_string.split(')')[0] + ')'  # Ensure it closes the parentheses
-    coord = coord_string.strip('()').split(',')
-    return tuple(map(int, coord))
 
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: python script.py <input_file>")
+    if len(sys.argv) != 3:
+        print("Usage: python script.py <input_file> <algorithm>")
+        print("Available algorithms: DFS, BFS, GBFS, ASTAR")
         sys.exit(1)
 
     input_file = sys.argv[1]
+    algorithm_name = sys.argv[2]
 
-    try:
-        with open(input_file, 'r') as file:
-            # First line: grid dimensions
-            first_line = file.readline().strip()
-            grid_dimensions = first_line.split(']')[0] + ']'
-            rows, cols = map(int, grid_dimensions.strip('[]').split(','))
+    # Read input file
+    result = read_input_file(input_file)
+    if result is None:
+        sys.exit(1)
 
-            # Second line: marker coordinates (column index, row index)
-            second_line = file.readline().strip()
-            col_idx, row_idx = parse_coordinates(second_line)
+    rows, cols, markers, goals, walls = result
 
-            # Third line: goal states (coordinates) e.g. (7,0) | (10,3)
-            third_line = file.readline().strip()
-            goal_coords = third_line.split('|')
-            goals = [parse_coordinates(goal.strip()) for goal in goal_coords]
+    # Create the grid
+    grid = create_grid(rows, cols, markers, goals, walls)
 
-            # Remaining lines: walls (col, row, width, height)
-            walls = []
-            for line in file:
-                line = line.strip()
-                if line:  # Ignore empty lines
-                    wall_coordinates = parse_coordinates(line)
-                    if len(wall_coordinates) == 4:
-                        walls.append(wall_coordinates)
+    # Specify the starting position of the light gray square (the marker cell)
+    start_position = (markers[0][0], markers[0][1])
 
-            # Print the specifications
-            print(f"Grid Dimensions: {rows} rows, {cols} columns")
-            print(f"Marker at: (Column: {col_idx}, Row: {row_idx})")
-            print(f"Goal states at: {goals}")
-            print(f"Walls at: {walls}")
-            
-            # Specify the cell to visualize the pathfinding
-            pathfinding_cell = (col_idx, row_idx)  # Example: currently the marker cell
-            
-            # Call the GUI display function
-            display_grid_gui(rows, cols, markers=[(col_idx, row_idx)], goals=goals, walls=walls, path_cell=pathfinding_cell)
+    # Create the GUI display
+    grid_display = display_grid_gui(rows, cols, markers=markers, goals=goals, walls=walls)
 
-    except FileNotFoundError:
-        print(f"Error: The file '{input_file}' was not found.")
-    except ValueError as e:
-        print(f"Error: Unable to parse grid dimensions or coordinates. {e}")
-    except Exception as e:
-        print(f"An error occurred: {e}")
+    # Select the search algorithm
+    algorithm = select_algorithm(algorithm_name)
+    if algorithm is None:
+        print(f"Error: Algorithm '{algorithm_name}' not recognized.")
+        print("Available algorithms: DFS, BFS, GBFS, ASTAR")
+        sys.exit(1)
+
+    # Call the selected algorithm to find a path to one of the goal cells
+    def update_gui(current, visited):
+        grid_display.update_search_cells(visited)  # Update the light green searched cells
+        grid_display.update_pathfinding_cell(current)  # Update the current pathfinding cell
+        time.sleep(0.1)  # Delay for visualization (adjust as needed)
+
+    path, node_count = algorithm(grid, start_position, goals, update_gui)
+
+    print(sys.argv[1], algorithm_name.upper())  # Display the input file and algorithm name
+    # Final update for the GUI after reaching the goal
+    if path:
+        grid_display.draw_final_path(path)  # Draw the blue line representing the final path
+
+        # Get the reached goal from the last element of the path
+        reached_goal = path[-1]
+        print(f"<Node {reached_goal}> {node_count}")  # Display the coordinates of the reached goal
+
+        directions = convert_path_to_directions(path)
+        print(directions)  # Display the directions in the console
+    else:
+        print("No goal is reachable.", node_count)  # Display the node count when no goal is reachable
+
+    # Keep the GUI open after pathfinding is complete
+    grid_display.root.mainloop()
 
 if __name__ == "__main__":
     main()
