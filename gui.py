@@ -8,6 +8,9 @@ class GridDisplay:
         self.markers = markers if markers else []
         self.goals = goals if goals else []
         self.walls = walls if walls else []
+        self.final_path = []  # Store the final path for re-drawing after resize
+        self.visited_cells = []  # Store visited cells to re-render them
+        self.current_pathfinding_cell = None  # Store the current pathfinding cell
         self.cell_size = 50  # Default size of each cell in pixels
 
         self.root = tk.Tk()
@@ -34,6 +37,15 @@ class GridDisplay:
         # Redraw the grid with the new cell size
         self.canvas.delete("all")
         self.draw_grid()
+
+        # Redraw visited cells and final path after resizing
+        self.update_search_cells(self.visited_cells)
+        if self.final_path:
+            self.draw_final_path(self.final_path)
+        
+        # Redraw the pathfinding cell after resizing
+        if self.current_pathfinding_cell:
+            self.update_pathfinding_cell(self.current_pathfinding_cell)
 
     def draw_grid(self):
         """Draw the entire grid with walls, markers, and goals."""
@@ -64,6 +76,7 @@ class GridDisplay:
 
     def update_search_cells(self, visited_cells):
         """Update the grid to show all searched cells in light green."""
+        self.visited_cells = visited_cells  # Store visited cells for re-rendering
         for cell in visited_cells:
             if cell not in self.goals and cell not in self.markers:
                 x1 = cell[0] * self.cell_size
@@ -76,6 +89,7 @@ class GridDisplay:
 
     def update_pathfinding_cell(self, path_cell):
         """Update the position of the pathfinding cell."""
+        self.current_pathfinding_cell = path_cell  # Store the current pathfinding cell for re-rendering
         self.canvas.delete("path_cell")
         smaller_square_size = self.cell_size * 0.7
         offset = (self.cell_size - smaller_square_size) // 2
@@ -89,6 +103,7 @@ class GridDisplay:
 
     def draw_final_path(self, path):
         """Draw the final path as a blue line after the goal is reached."""
+        self.final_path = path  # Store the final path for re-drawing after resize
         for i in range(len(path) - 1):
             x1 = path[i][0] * self.cell_size + self.cell_size // 2
             y1 = path[i][1] * self.cell_size + self.cell_size // 2
