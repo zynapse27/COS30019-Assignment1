@@ -9,8 +9,9 @@ def select_algorithm(algorithm_name):
     """Map the algorithm name to the corresponding function, case-insensitively."""
     algorithms = {
         'DFS': pathfinding.dfs,
-        # 'bfs': bfs,
-        # 'astar': astar
+        'BFS': pathfinding.bfs,
+        'GBFS': pathfinding.gbfs,
+        'ASTAR': pathfinding.astar
     }
     return algorithms.get(algorithm_name.upper(), None)
 
