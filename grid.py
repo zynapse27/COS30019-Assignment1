@@ -21,7 +21,4 @@ def create_grid(rows, cols, markers=None, goals=None, walls=None):
 
     return grid
 
-def print_grid(grid):
-    """Print the grid to the console for debugging."""
-    for row in grid:
-        print(' '.join(row))
+

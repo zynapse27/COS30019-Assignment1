@@ -1,27 +1,28 @@
-# main.py
-
 import sys
 from file_parser import read_input_file
-from grid import create_grid, print_grid
+from grid import create_grid
 from gui import display_grid_gui
-from pathfinding import dfs
+import pathfinding
 import time
 
-def print_specifications(rows, cols, markers, goals, walls):
-    """Print the grid specifications including markers, goals, and walls."""
-    print(f"Grid Dimensions: {rows} rows, {cols} columns")
-    print(f"Marker Cell at: {markers}")
-    print(f"Goal Cells at: {goals}")
-    print(f"Walls at: {walls}")
-    print("\n")
+def select_algorithm(algorithm_name):
+    """Map the algorithm name to the corresponding function, case-insensitively."""
+    algorithms = {
+        'dfs': pathfinding.dfs,
+        # 'bfs': bfs,
+        # 'astar': astar
+    }
+    return algorithms.get(algorithm_name.lower(), None)
 
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: python main.py <input_file>")
+    if len(sys.argv) != 3:
+        print("Usage: python main.py <input_file> <algorithm>")
+        print("Available algorithms: DFS, BFS, GBFS, ASTAR")
         sys.exit(1)
 
     input_file = sys.argv[1]
-    
+    algorithm_name = sys.argv[2]
+
     # Read input file
     result = read_input_file(input_file)
     if result is None:
@@ -38,13 +39,20 @@ def main():
     # Create the GUI display
     grid_display = display_grid_gui(rows, cols, markers=markers, goals=goals, walls=walls)
 
-    # Call the DFS to find a path to one of the goal cells
+    # Select the search algorithm
+    algorithm = select_algorithm(algorithm_name)
+    if algorithm is None:
+        print(f"Error: Algorithm '{algorithm_name}' not recognized.")
+        print("Available algorithms: DFS, BFS, GBFS, ASTAR")
+        sys.exit(1)
+
+    # Call the selected algorithm to find a path to one of the goal cells
     def update_gui(current, visited):
         grid_display.update_search_cells(visited)  # Update the light green searched cells
         grid_display.update_pathfinding_cell(current)  # Update the current pathfinding cell
         time.sleep(0.1)  # Delay for visualization (adjust as needed)
 
-    path = dfs(grid, start_position, goals, update_gui)
+    path = algorithm(grid, start_position, goals, update_gui)
 
     # Final update for the GUI after reaching the goal
     if path:

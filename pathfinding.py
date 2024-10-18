@@ -1,46 +1,73 @@
-# pathfinding.py
-
-def dfs(grid, start, goals, update_gui):
-    """Depth-First Search (DFS) algorithm to find a path to one of the goal cells.
+def dfs(grid, start, goals, update_gui=None):
+    """
+    Perform a Depth-First Search to find a path from start to one of the goal cells.
     
-    Args:
-        grid (list): The grid representation.
-        start (tuple): Starting position (column, row).
-        goals (list): List of goal positions.
-        update_gui (function): Function to call to update the GUI after each move.
+    Arguments:
+    - grid: The grid representing the environment, where walls are marked.
+    - start: The starting position of the agent (tuple of column, row).
+    - goals: A list of goal positions (tuples of column, row).
+    - update_gui: A callback function to update the GUI (optional).
     
     Returns:
-        list: The path taken to reach a goal or an empty list if no path found.
+    - path: The final path to the goal, or None if no path is found.
     """
-    rows, cols = len(grid), len(grid[0])
-    stack = [start]
+    
+    rows, cols = len(grid), len(grid[0])  # Get grid dimensions
+    walls = {(c, r) for r in range(rows) for c in range(cols) if grid[r][c] == 'W'}  # Collect wall positions
+    
+    # Stack for DFS: Each element is a tuple (current_node, path_taken)
+    stack = [(start, [start])]
+    
+    # Set to keep track of visited nodes
     visited = set()
-    path = []
-
+    
     while stack:
-        current = stack.pop()
+        # Pop the most recent node (LIFO order)
+        current, path = stack.pop()
+        
+        # Mark the current node as visited
         if current in visited:
             continue
-
+        
         visited.add(current)
-        path.append(current)
-
-        # Update GUI to show current position and all visited cells
-        update_gui(current, visited)
-
-        # Check if the current position is a goal
+        
+        # Update the GUI with the current position and visited nodes (if a GUI callback is provided)
+        if update_gui:
+            update_gui(current, visited)
+        
+        # Check if the current node is a goal
         if current in goals:
-            print(f"Goal reached at: {current}")
-            return path  # Return the path if a goal is reached
+            return path  # Return the path to the goal
+        
+        # Get neighbors using the provided get_neighbors function
+        neighbors = get_neighbors(current, walls, rows, cols)
+        
+        # Add neighbors to the stack in reverse order to maintain UP, LEFT, DOWN, RIGHT expansion order
+        for neighbor in reversed(neighbors):
+            if neighbor not in visited:
+                stack.append((neighbor, path + [neighbor]))
+    
+    # If the stack is empty and no goal was found
+    return None
 
-        # Get possible movements in order: UP, LEFT, DOWN, RIGHT
-        for dx, dy in [(-1, 0), (0, -1), (1, 0), (0, 1)]:  # UP, LEFT, DOWN, RIGHT
-            neighbor = (current[0] + dx, current[1] + dy)
-            if (0 <= neighbor[0] < cols and  # Check column bounds
-                0 <= neighbor[1] < rows and  # Check row bounds
-                grid[neighbor[1]][neighbor[0]] not in ['W', 'M'] and  # Avoid walls and marker
-                neighbor not in visited):  # Avoid revisiting nodes
-                stack.append(neighbor)
 
-    print("No path to goal found.")
-    return []  # Return an empty list if no path found
+
+def get_neighbors(cell, walls, rows, cols):
+    """Get valid neighbors of a cell (UP, LEFT, DOWN, RIGHT) that are not walls."""
+    col, row = cell
+    neighbors = []
+
+    # UP
+    if row > 0 and (col, row - 1) not in walls:
+        neighbors.append((col, row - 1))
+    # LEFT
+    if col > 0 and (col - 1, row) not in walls:
+        neighbors.append((col - 1, row))
+    # DOWN
+    if row < rows - 1 and (col, row + 1) not in walls:
+        neighbors.append((col, row + 1))
+    # RIGHT
+    if col < cols - 1 and (col + 1, row) not in walls:
+        neighbors.append((col + 1, row))
+    
+    return neighbors
