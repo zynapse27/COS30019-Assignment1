@@ -6,9 +6,9 @@ class GridDisplay:
     def __init__(self, rows, cols, markers=None, goals=None, walls=None):
         self.rows = rows
         self.cols = cols
-        self.markers = markers
-        self.goals = goals
-        self.walls = walls
+        self.markers = markers if markers else []
+        self.goals = goals if goals else []
+        self.walls = walls if walls else []
         self.cell_size = 50  # Size of each cell in pixels
 
         # Increase the canvas size based on the number of rows and columns
@@ -62,11 +62,13 @@ class GridDisplay:
     def update_pathfinding_cell(self, path_cell):
         """Update the position of the pathfinding cell."""
         self.canvas.delete("path_cell")  # Clear previous path cell
-        path_x1 = path_cell[0] * self.cell_size + 10  # Offset for the smaller square
-        path_y1 = path_cell[1] * self.cell_size + 10  # Offset for the smaller square
-        path_x2 = path_x1 + 30  # Smaller square width
-        path_y2 = path_y1 + 30  # Smaller square height
-        self.canvas.create_rectangle(path_x1, path_y1, path_x2, path_y2, fill='magenta', tags="path_cell")  # Draw pathfinding square
+        smaller_square_size = 35  # Size of the smaller square
+        offset = (self.cell_size - smaller_square_size) // 2  # Calculate the offset to center the smaller square
+        path_x1 = path_cell[0] * self.cell_size + offset  # Offset for the smaller square
+        path_y1 = path_cell[1] * self.cell_size + offset  # Offset for the smaller square
+        path_x2 = path_x1 + smaller_square_size  # Smaller square width
+        path_y2 = path_y1 + smaller_square_size  # Smaller square height
+        self.canvas.create_rectangle(path_x1, path_y1, path_x2, path_y2, fill='red3', tags="path_cell")  # Draw pathfinding square
         self.root.update()  # Update the GUI
 
     def draw_final_path(self, path):
