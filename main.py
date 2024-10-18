@@ -8,11 +8,31 @@ import time
 def select_algorithm(algorithm_name):
     """Map the algorithm name to the corresponding function, case-insensitively."""
     algorithms = {
-        'dfs': pathfinding.dfs,
+        'DFS': pathfinding.dfs,
         # 'bfs': bfs,
         # 'astar': astar
     }
-    return algorithms.get(algorithm_name.lower(), None)
+    return algorithms.get(algorithm_name.upper(), None)
+
+def convert_path_to_directions(path):
+    directions = []
+    direction_map = {
+        (0, -1): 'up',
+        (0, 1): 'down',
+        (-1, 0): 'left',
+        (1, 0): 'right'
+    }
+    
+    for i in range(len(path) - 1):
+        current = path[i]
+        next_cell = path[i + 1]
+        move = (next_cell[0] - current[0], next_cell[1] - current[1])
+        
+        if move in direction_map:
+            directions.append(direction_map[move])
+    
+    return directions
+
 
 def main():
     if len(sys.argv) != 3:
@@ -52,13 +72,21 @@ def main():
         grid_display.update_pathfinding_cell(current)  # Update the current pathfinding cell
         time.sleep(0.1)  # Delay for visualization (adjust as needed)
 
-    path = algorithm(grid, start_position, goals, update_gui)
+    path, node_count = algorithm(grid, start_position, goals, update_gui)
 
+    print(sys.argv[1], algorithm_name.upper())  # Display the input file and algorithm name
     # Final update for the GUI after reaching the goal
     if path:
         grid_display.draw_final_path(path)  # Draw the blue line representing the final path
+
+        # Get the reached goal from the last element of the path
+        reached_goal = path[-1]
+        print(f"<Node {reached_goal}> {node_count}")  # Display the coordinates of the reached goal
+
+        directions = convert_path_to_directions(path)
+        print(directions)  # Display the directions in the console
     else:
-        print("No path found to any goal cell.")
+        print("No goal is reachable.", node_count)  # Display the node count when no goal is reachable
 
     # Keep the GUI open after pathfinding is complete
     grid_display.root.mainloop()

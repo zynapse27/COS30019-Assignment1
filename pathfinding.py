@@ -10,6 +10,7 @@ def dfs(grid, start, goals, update_gui=None):
     
     Returns:
     - path: The final path to the goal, or None if no path is found.
+    - node_count: The total number of nodes created during the search.
     """
     
     rows, cols = len(grid), len(grid[0])  # Get grid dimensions
@@ -20,7 +21,8 @@ def dfs(grid, start, goals, update_gui=None):
     
     # Set to keep track of visited nodes
     visited = set()
-    
+    node_count = 0  # Counter for nodes created
+
     while stack:
         # Pop the most recent node (LIFO order)
         current, path = stack.pop()
@@ -30,6 +32,7 @@ def dfs(grid, start, goals, update_gui=None):
             continue
         
         visited.add(current)
+        node_count += 1  # Increment the node counter
         
         # Update the GUI with the current position and visited nodes (if a GUI callback is provided)
         if update_gui:
@@ -37,7 +40,7 @@ def dfs(grid, start, goals, update_gui=None):
         
         # Check if the current node is a goal
         if current in goals:
-            return path  # Return the path to the goal
+            return path, node_count  # Return the path to the goal and the node count
         
         # Get neighbors using the provided get_neighbors function
         neighbors = get_neighbors(current, walls, rows, cols)
@@ -48,7 +51,8 @@ def dfs(grid, start, goals, update_gui=None):
                 stack.append((neighbor, path + [neighbor]))
     
     # If the stack is empty and no goal was found
-    return None
+    return None, node_count  # Return None for path and the node count
+
 
 
 
