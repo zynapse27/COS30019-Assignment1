@@ -148,68 +148,67 @@ def gbfs(grid, start, goals, update_gui=None):
     return None, node_count  # Return None for path and the node count
 
 # A* Search Algorithm
+# Different implementation 
 def astar(grid, start, goals, update_gui=None):
-    
     rows, cols = len(grid), len(grid[0])  # Get grid dimensions
     walls = {(c, r) for r in range(rows) for c in range(cols) if grid[r][c] == 'W'}  # Collect wall positions
-    
+
     # Priority queue for A* (min-heap)
-    priority_queue = []
-    heapq.heappush(priority_queue, (0, start))  # (f(n), position)
-    
+    open_list = []
+    start_f_value = manhattan_distance(start, goals)
+    heapq.heappush(open_list, (start_f_value, 0, start, [start]))  # (f(n), g(n), position, path)
+
     # To reconstruct the path
     came_from = {start: None}
-    
-    # Cost from start to current node
+
+    # g_score for each node
     g_score = {start: 0}  
-    # Total cost
-    f_score = {start: manhattan_distance(start, goals)}  
-    
-    node_count = 0  # Counter for nodes created
+    # f_score for each node
+    f_score = {start: start_f_value}
+
     visited = set()  # Set to keep track of visited nodes
 
-    while priority_queue:
+    while open_list:
         # Get the node with the lowest f(n) score
-        current_f, current = heapq.heappop(priority_queue)
+        current_f, current_g, current, path = heapq.heappop(open_list)
 
-        # Mark the current node as visited
+        # Skip if already visited
         if current in visited:
             continue
-        
+
+        # Mark the current node as visited
         visited.add(current)
-        node_count += 1  # Increment the node counter
-        
+
         # Update the GUI with the current position and visited nodes (if a GUI callback is provided)
         if update_gui:
             update_gui(current, visited)
 
         # Check if the current node is a goal
         if current in goals:
-            # Reconstruct the path
-            path = []
+            # Reconstruct the path to the goal
+            full_path = []
             while current is not None:
-                path.append(current)
+                full_path.append(current)
                 current = came_from[current]
-            path.reverse()  # Reverse the path to get from start to goal
-            return path, node_count  # Return the path to the goal and the node count
+            full_path.reverse()  # Reverse to get path from start to goal
+            return full_path, len(visited)  # Return path and visited node count
         
         # Get neighbors using the provided get_neighbors function
-        neighbors = get_neighbors(current, walls, rows, cols)
+        for neighbor in get_neighbors(current, walls, rows, cols):
+            tentative_g_score = g_score[current] + 1  # Cost from current to neighbor is assumed to be 1
 
-        for neighbor in neighbors:
-            tentative_g_score = g_score[current] + 1  # Assume cost from current to neighbor is 1
-            
+            # If this path to neighbor is better than any previous one
             if neighbor not in g_score or tentative_g_score < g_score[neighbor]:
-                # This path to neighbor is better than any previous one
                 came_from[neighbor] = current
                 g_score[neighbor] = tentative_g_score
                 f_score[neighbor] = tentative_g_score + manhattan_distance(neighbor, goals)
 
                 if neighbor not in visited:
-                    heapq.heappush(priority_queue, (f_score[neighbor], neighbor))
+                    heapq.heappush(open_list, (f_score[neighbor], tentative_g_score, neighbor, path + [neighbor]))
 
-    # If the priority queue is empty and no goal was found
-    return None, node_count  # Return None for path and the node count
+    # If the open_list is empty and no goal was found
+    return None, len(visited)  # Return None for path and the visited node count
+
 
 # Iterative Deepening Depth-First Search (IDDFS)
 def iddfs(grid, start, goals, update_gui=None):
