@@ -148,7 +148,6 @@ def gbfs(grid, start, goals, update_gui=None):
     return None, node_count  # Return None for path and the node count
 
 # A* Search Algorithm
-# Different implementation 
 def astar(grid, start, goals, update_gui=None):
     rows, cols = len(grid), len(grid[0])  # Get grid dimensions
     walls = {(c, r) for r in range(rows) for c in range(cols) if grid[r][c] == 'W'}  # Collect wall positions
@@ -160,6 +159,7 @@ def astar(grid, start, goals, update_gui=None):
 
     # To reconstruct the path
     came_from = {start: None}
+    node_count = 0  # Counter for nodes created
 
     # g_score for each node
     g_score = {start: 0}  
@@ -178,6 +178,9 @@ def astar(grid, start, goals, update_gui=None):
 
         # Mark the current node as visited
         visited.add(current)
+
+        # Increment the node counter
+        node_count += 1  
 
         # Update the GUI with the current position and visited nodes (if a GUI callback is provided)
         if update_gui:
@@ -207,7 +210,7 @@ def astar(grid, start, goals, update_gui=None):
                     heapq.heappush(open_list, (f_score[neighbor], tentative_g_score, neighbor, path + [neighbor]))
 
     # If the open_list is empty and no goal was found
-    return None, len(visited)  # Return None for path and the visited node count
+    return None, node_count  # Return None for path and the visited node count
 
 
 # Iterative Deepening Depth-First Search (IDDFS)
