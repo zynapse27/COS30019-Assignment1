@@ -6,7 +6,7 @@ import pathfinding
 import time
 
 def select_algorithm(algorithm_name):
-    """Map the algorithm name to the corresponding function, case-insensitively."""
+    # Maps the algorithm name to the corresponding function
     algorithms = {
         'DFS': pathfinding.dfs,
         'BFS': pathfinding.bfs,
@@ -39,7 +39,7 @@ def convert_path_to_directions(path):
 def main():
     if len(sys.argv) != 3:
         print("Usage: python script.py <input_file> <algorithm>")
-        print("Available algorithms: DFS, BFS, GBFS, ASTAR")
+        print("Available algorithms: DFS, BFS, GBFS, ASTAR, CUS1")
         sys.exit(1)
 
     input_file = sys.argv[1]

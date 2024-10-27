@@ -2,20 +2,7 @@ import heapq
 
 # Depth-First Search (DFS)
 def dfs(grid, start, goals, update_gui=None):
-    """
-    Perform a Depth-First Search to find a path from start to one of the goal cells.
-    
-    Arguments:
-    - grid: The grid representing the environment, where walls are marked.
-    - start: The starting position of the agent (tuple of column, row).
-    - goals: A list of goal positions (tuples of column, row).
-    - update_gui: A callback function to update the GUI (optional).
-    
-    Returns:
-    - path: The final path to the goal, or None if no path is found.
-    - node_count: The total number of nodes created during the search.
-    """
-    
+
     rows, cols = len(grid), len(grid[0])  # Get grid dimensions
     walls = {(c, r) for r in range(rows) for c in range(cols) if grid[r][c] == 'W'}  # Collect wall positions
     
@@ -58,19 +45,6 @@ def dfs(grid, start, goals, update_gui=None):
 
 # Breadth-First Search (BFS)
 def bfs(grid, start, goals, update_gui=None):
-    """
-    Perform a Breadth-First Search to find a path from start to one of the goal cells.
-    
-    Arguments:
-    - grid: The grid representing the environment, where walls are marked.
-    - start: The starting position of the agent (tuple of column, row).
-    - goals: A list of goal positions (tuples of column, row).
-    - update_gui: A callback function to update the GUI (optional).
-    
-    Returns:
-    - path: The final path to the goal, or None if no path is found.
-    - node_count: The total number of nodes created during the search.
-    """
     
     rows, cols = len(grid), len(grid[0])  # Get grid dimensions
     walls = {(c, r) for r in range(rows) for c in range(cols) if grid[r][c] == 'W'}  # Collect wall positions
@@ -120,19 +94,6 @@ def manhattan_distance(node, goals):
 
 # Greedy Best-First Search (GBFS)
 def gbfs(grid, start, goals, update_gui=None):
-    """
-    Perform a Greedy Best-First Search to find a path from start to one of the goal cells.
-    
-    Arguments:
-    - grid: The grid representing the environment, where walls are marked.
-    - start: The starting position of the agent (tuple of column, row).
-    - goals: A list of goal positions (tuples of column, row).
-    - update_gui: A callback function to update the GUI (optional).
-    
-    Returns:
-    - path: The final path to the goal, or None if no path is found.
-    - node_count: The total number of nodes created during the search.
-    """
     
     rows, cols = len(grid), len(grid[0])  # Get grid dimensions
     walls = {(c, r) for r in range(rows) for c in range(cols) if grid[r][c] == 'W'}  # Collect wall positions
@@ -188,19 +149,6 @@ def gbfs(grid, start, goals, update_gui=None):
 
 # A* Search Algorithm
 def astar(grid, start, goals, update_gui=None):
-    """
-    Perform an A* Search to find a path from start to one of the goal cells.
-    
-    Arguments:
-    - grid: The grid representing the environment, where walls are marked.
-    - start: The starting position of the agent (tuple of column, row).
-    - goals: A list of goal positions (tuples of column, row).
-    - update_gui: A callback function to update the GUI (optional).
-    
-    Returns:
-    - path: The final path to the goal, or None if no path is found.
-    - node_count: The total number of nodes created during the search.
-    """
     
     rows, cols = len(grid), len(grid[0])  # Get grid dimensions
     walls = {(c, r) for r in range(rows) for c in range(cols) if grid[r][c] == 'W'}  # Collect wall positions
@@ -263,36 +211,15 @@ def astar(grid, start, goals, update_gui=None):
     # If the priority queue is empty and no goal was found
     return None, node_count  # Return None for path and the node count
 
+# Iterative Deepening Depth-First Search (IDDFS)
 def iddfs(grid, start, goals, update_gui=None):
-    """
-    Perform an Iterative Deepening Depth-First Search to find a path from start to one of the goal cells.
-    
-    Arguments:
-    - grid: The grid representing the environment, where walls are marked.
-    - start: The starting position of the agent (tuple of column, row).
-    - goals: A list of goal positions (tuples of column, row).
-    - update_gui: A callback function to update the GUI (optional).
-    
-    Returns:
-    - path: The final path to the goal, or None if no path is found.
-    - node_count: The total number of nodes created during the search.
-    """
 
-    def dls(node, depth, path, visited):
-        """
-        Depth-Limited Search helper function.
-        
-        Arguments:
-        - node: The current node (tuple of column, row).
-        - depth: The current depth of the search.
-        - path: The path taken to reach this node.
-        - visited: A set of visited nodes.
-        
-        Returns:
-        - path: The final path to the goal, or None if no path is found.
-        """
+    def dls(node, depth, path, visited): # Depth-limited search function, to be called recursively by the IDDFS function
+    # Essentially DFS but simplified and modified to have a depth limit
+
+        # Stops the search if the depth limit is reached 
         if depth == 0:
-            return None  # Depth limit reached
+            return None  
         
         # Mark the current node as visited
         if node in visited:
@@ -333,7 +260,6 @@ def iddfs(grid, start, goals, update_gui=None):
 
 #Helper function to get valid neighbors of a cell that are not walls.
 def get_neighbors(cell, walls, rows, cols):
-    """Get valid neighbors of a cell (UP, LEFT, DOWN, RIGHT) that are not walls."""
     col, row = cell
     neighbors = []
 
