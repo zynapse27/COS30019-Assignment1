@@ -11,7 +11,8 @@ def select_algorithm(algorithm_name):
         'DFS': pathfinding.dfs,
         'BFS': pathfinding.bfs,
         'GBFS': pathfinding.gbfs,
-        'ASTAR': pathfinding.astar
+        'ASTAR': pathfinding.astar,
+        'CUS1': pathfinding.iddfs
     }
     return algorithms.get(algorithm_name.upper(), None)
 

@@ -263,6 +263,74 @@ def astar(grid, start, goals, update_gui=None):
     # If the priority queue is empty and no goal was found
     return None, node_count  # Return None for path and the node count
 
+def iddfs(grid, start, goals, update_gui=None):
+    """
+    Perform an Iterative Deepening Depth-First Search to find a path from start to one of the goal cells.
+    
+    Arguments:
+    - grid: The grid representing the environment, where walls are marked.
+    - start: The starting position of the agent (tuple of column, row).
+    - goals: A list of goal positions (tuples of column, row).
+    - update_gui: A callback function to update the GUI (optional).
+    
+    Returns:
+    - path: The final path to the goal, or None if no path is found.
+    - node_count: The total number of nodes created during the search.
+    """
+
+    def dls(node, depth, path, visited):
+        """
+        Depth-Limited Search helper function.
+        
+        Arguments:
+        - node: The current node (tuple of column, row).
+        - depth: The current depth of the search.
+        - path: The path taken to reach this node.
+        - visited: A set of visited nodes.
+        
+        Returns:
+        - path: The final path to the goal, or None if no path is found.
+        """
+        if depth == 0:
+            return None  # Depth limit reached
+        
+        # Mark the current node as visited
+        if node in visited:
+            return None
+
+        visited.add(node)
+        
+        # Update the GUI with the current position and visited nodes (if a GUI callback is provided)
+        if update_gui:
+            update_gui(node, visited)
+        
+        # Check if the current node is a goal
+        if node in goals:
+            return path  # Return the path to the goal
+        
+        # Get neighbors using the provided get_neighbors function
+        neighbors = get_neighbors(node, walls, rows, cols)
+        
+        for neighbor in neighbors:
+            result = dls(neighbor, depth - 1, path + [neighbor], visited)
+            if result is not None:
+                return result  # Return the found path if not None
+
+        return None  # No path found at this depth
+
+    rows, cols = len(grid), len(grid[0])  # Get grid dimensions
+    walls = {(c, r) for r in range(rows) for c in range(cols) if grid[r][c] == 'W'}  # Collect wall positions
+
+    # Iterate over depth limits until a goal is found
+    for depth in range(rows * cols):  # Arbitrary limit based on grid size
+        print(f"Depth: {depth}")
+        visited = set()  # Reset visited for each depth limit
+        path = dls(start, depth, [start], visited)  # Perform depth-limited search
+        if path is not None:
+            return path, len(visited)  # Return path and the number of unique nodes visited
+
+    return None, 0  # If no path is found within the limits
+
 #Helper function to get valid neighbors of a cell that are not walls.
 def get_neighbors(cell, walls, rows, cols):
     """Get valid neighbors of a cell (UP, LEFT, DOWN, RIGHT) that are not walls."""
