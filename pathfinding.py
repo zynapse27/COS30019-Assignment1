@@ -109,7 +109,7 @@ def gbfs(grid, start, goals, update_gui=None):
 
     while priority_queue:
         # Pop the node with the lowest heuristic cost (the best node)
-        _, current = heapq.heappop(priority_queue)
+        current = heapq.heappop(priority_queue)
 
         # Mark the current node as visited
         if current in visited:
