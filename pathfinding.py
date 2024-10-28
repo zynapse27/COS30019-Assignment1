@@ -24,7 +24,7 @@ def dfs(grid, start, goals, update_gui=None, clear_gui=None):
         visited.add(current)
         node_count += 1  # Increment the node counter
         
-        # Update the GUI with the current position and visited nodes (if a GUI callback is provided)
+        # Update the GUI with the current position, visited nodes, and potential nodes (if a GUI callback is provided)
         if update_gui:
             potential_nodes = get_neighbors(current, walls, rows, cols)
             update_gui(current, visited, potential_nodes)
@@ -68,9 +68,10 @@ def bfs(grid, start, goals, update_gui=None, clear_gui=None):
         visited.add(current)
         node_count += 1  # Increment the node counter
         
-        # Update the GUI with the current position and visited nodes (if a GUI callback is provided)
+        # Update the GUI with the current position, visited nodes, and potential nodes (if a GUI callback is provided)
         if update_gui:
-            update_gui(current, visited)
+            potential_nodes = get_neighbors(current, walls, rows, cols)
+            update_gui(current, visited, potential_nodes)
         
         # Check if the current node is a goal
         if current in goals:
@@ -95,19 +96,7 @@ def manhattan_distance(node, goals):
 
 # Greedy Best-First Search (GBFS)
 def gbfs(grid, start, goals, update_gui=None, clear_gui=None):
-    """
-    Perform a Greedy Best-First Search to find a path from start to one of the goal cells.
-    
-    Arguments:
-    - grid: The grid representing the environment, where walls are marked.
-    - start: The starting position of the agent (tuple of column, row).
-    - goals: A list of goal positions (tuples of column, row).
-    - update_gui: A callback function to update the GUI (optional).
-    
-    Returns:
-    - path: The final path to the goal, or None if no path is found.
-    - node_count: The total number of nodes created during the search.
-    """
+
     
     rows, cols = len(grid), len(grid[0])  # Get grid dimensions
     walls = {(c, r) for r in range(rows) for c in range(cols) if grid[r][c] == 'W'}  # Collect wall positions
@@ -132,9 +121,10 @@ def gbfs(grid, start, goals, update_gui=None, clear_gui=None):
         visited.add(current)
         node_count += 1  # Increment the node counter
         
-        # Update the GUI with the current position and visited nodes (if a GUI callback is provided)
+        # Update the GUI with the current position, visited nodes, and potential nodes (if a GUI callback is provided)
         if update_gui:
-            update_gui(current, visited)
+            potential_nodes = get_neighbors(current, walls, rows, cols)
+            update_gui(current, visited, potential_nodes)
         
         # Check if the current node is a goal
         if current in goals:
@@ -196,9 +186,10 @@ def astar(grid, start, goals, update_gui=None, clear_gui=None):
         # Increment the node counter
         node_count += 1  
 
-        # Update the GUI with the current position and visited nodes (if a GUI callback is provided)
+        # Update the GUI with the current position, visited nodes, and potential nodes (if a GUI callback is provided)
         if update_gui:
-            update_gui(current, visited)
+            potential_nodes = get_neighbors(current, walls, rows, cols)
+            update_gui(current, visited, potential_nodes)
 
         # Check if the current node is a goal
         if current in goals:
@@ -230,7 +221,7 @@ def astar(grid, start, goals, update_gui=None, clear_gui=None):
 # Iterative Deepening Depth-First Search (IDDFS)
 def iddfs(grid, start, goals, update_gui=None, clear_gui=None):
 
-    def dls(node, depth, path, visited): # Depth-limited search function, to be called recursively by the IDDFS function
+    def dls(current, depth, path, visited): # Depth-limited search function, to be called recursively by the IDDFS function
     # Essentially DFS but simplified and modified to have a depth limit
 
         # Stops the search if the depth limit is reached 
@@ -238,21 +229,22 @@ def iddfs(grid, start, goals, update_gui=None, clear_gui=None):
             return None  
         
         # Mark the current node as visited
-        if node in visited:
+        if current in visited:
             return None
 
-        visited.add(node)
+        visited.add(current)
         
-        # Update the GUI with the current position and visited nodes (if a GUI callback is provided)
+        # Update the GUI with the current position, visited nodes, and potential nodes (if a GUI callback is provided)
         if update_gui:
-            update_gui(node, visited)
+            potential_nodes = get_neighbors(current, walls, rows, cols)
+            update_gui(current, visited, potential_nodes)
         
         # Check if the current node is a goal
-        if node in goals:
+        if current in goals:
             return path  # Return the path to the goal
         
         # Get neighbors using the provided get_neighbors function
-        neighbors = get_neighbors(node, walls, rows, cols)
+        neighbors = get_neighbors(current, walls, rows, cols)
         
         for neighbor in neighbors:
             result = dls(neighbor, depth - 1, path + [neighbor], visited)

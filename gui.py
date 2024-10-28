@@ -122,7 +122,7 @@ class GridDisplay:
             x2 = x1 + self.cell_size
             y2 = y1 + self.cell_size
             if node not in self.goals and node not in self.markers and node not in self.visited_cells:
-                self.canvas.create_rectangle(x1, y1, x2, y2, fill='yellow', outline='black', tags="potential_node")
+                self.canvas.create_rectangle(x1, y1, x2, y2, fill='lightpink', outline='black', tags="potential_node")
 
         self.root.update()
 
