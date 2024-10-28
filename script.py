@@ -92,7 +92,6 @@ def main():
     # Final update for the GUI after reaching the goal
     if path:
         grid_display.draw_final_path(path)  # Draw the blue line representing the final path
-        update_gui(path[-1], [], []) # Update the GUI again so path cell appears on top of path line
 
         # Get the reached goal from the last element of the path
         reached_goal = path[-1]

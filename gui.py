@@ -117,6 +117,7 @@ class GridDisplay:
 
     def update_potential_nodes(self, potential_nodes):
         """Highlight potential nodes being evaluated."""
+        
         for node in potential_nodes:
             x1 = node[0] * self.cell_size
             y1 = node[1] * self.cell_size
