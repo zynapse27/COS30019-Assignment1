@@ -219,7 +219,7 @@ def astar(grid, start, goals, update_gui=None, clear_gui=None):
     return None, node_count  # Return None for path and the visited node count
 
 
-# Iterative Deepening Depth-First Search (IDDFS)
+# Custom 1: Iterative Deepening Depth-First Search (IDDFS)
 def iddfs(grid, start, goals, update_gui=None, clear_gui=None):
 
     def dls(current, depth, path, visited): # Depth-limited search function, to be called recursively by the IDDFS function
