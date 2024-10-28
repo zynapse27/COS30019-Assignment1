@@ -72,7 +72,7 @@ def main():
     def update_gui(current, visited):
         grid_display.update_search_cells(visited)  # Update the light green searched cells
         grid_display.update_pathfinding_cell(current)  # Update the current pathfinding cell
-        time.sleep(0.1)  # Delay for visualization
+        time.sleep(0.2)  # Delay for visualization
 
     path, node_count = algorithm(grid, start_position, goals, update_gui)
 

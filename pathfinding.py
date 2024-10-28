@@ -94,6 +94,19 @@ def manhattan_distance(node, goals):
 
 # Greedy Best-First Search (GBFS)
 def gbfs(grid, start, goals, update_gui=None):
+    """
+    Perform a Greedy Best-First Search to find a path from start to one of the goal cells.
+    
+    Arguments:
+    - grid: The grid representing the environment, where walls are marked.
+    - start: The starting position of the agent (tuple of column, row).
+    - goals: A list of goal positions (tuples of column, row).
+    - update_gui: A callback function to update the GUI (optional).
+    
+    Returns:
+    - path: The final path to the goal, or None if no path is found.
+    - node_count: The total number of nodes created during the search.
+    """
     
     rows, cols = len(grid), len(grid[0])  # Get grid dimensions
     walls = {(c, r) for r in range(rows) for c in range(cols) if grid[r][c] == 'W'}  # Collect wall positions
@@ -109,7 +122,7 @@ def gbfs(grid, start, goals, update_gui=None):
 
     while priority_queue:
         # Pop the node with the lowest heuristic cost (the best node)
-        current = heapq.heappop(priority_queue)
+        _, current = heapq.heappop(priority_queue)
 
         # Mark the current node as visited
         if current in visited:
