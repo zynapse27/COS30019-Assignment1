@@ -113,6 +113,11 @@ class GridDisplay:
 
         self.root.update()
 
+    def reset(self):
+        """Reset the grid to its initial state."""
+        self.visited_cells = []
+        self.draw_grid()  # Redraw the grid in its initial state
+
 def display_grid_gui(rows, cols, markers=None, goals=None, walls=None):
     """Create the GUI and handle updates during DFS."""
     grid_display = GridDisplay(rows, cols, markers, goals, walls)

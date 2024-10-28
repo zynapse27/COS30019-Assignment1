@@ -1,7 +1,7 @@
 import heapq
 
 # Depth-First Search (DFS)
-def dfs(grid, start, goals, update_gui=None):
+def dfs(grid, start, goals, update_gui=None, clear_gui=None):
 
     rows, cols = len(grid), len(grid[0])  # Get grid dimensions
     walls = {(c, r) for r in range(rows) for c in range(cols) if grid[r][c] == 'W'}  # Collect wall positions
@@ -44,7 +44,7 @@ def dfs(grid, start, goals, update_gui=None):
     return None, node_count  # Return None for path and the node count
 
 # Breadth-First Search (BFS)
-def bfs(grid, start, goals, update_gui=None):
+def bfs(grid, start, goals, update_gui=None, clear_gui=None):
     
     rows, cols = len(grid), len(grid[0])  # Get grid dimensions
     walls = {(c, r) for r in range(rows) for c in range(cols) if grid[r][c] == 'W'}  # Collect wall positions
@@ -93,7 +93,7 @@ def manhattan_distance(node, goals):
     return min(abs(node[0] - goal[0]) + abs(node[1] - goal[1]) for goal in goals)
 
 # Greedy Best-First Search (GBFS)
-def gbfs(grid, start, goals, update_gui=None):
+def gbfs(grid, start, goals, update_gui=None, clear_gui=None):
     """
     Perform a Greedy Best-First Search to find a path from start to one of the goal cells.
     
@@ -161,7 +161,7 @@ def gbfs(grid, start, goals, update_gui=None):
     return None, node_count  # Return None for path and the node count
 
 # A* Search Algorithm
-def astar(grid, start, goals, update_gui=None):
+def astar(grid, start, goals, update_gui=None, clear_gui=None):
     rows, cols = len(grid), len(grid[0])  # Get grid dimensions
     walls = {(c, r) for r in range(rows) for c in range(cols) if grid[r][c] == 'W'}  # Collect wall positions
 
@@ -227,7 +227,7 @@ def astar(grid, start, goals, update_gui=None):
 
 
 # Iterative Deepening Depth-First Search (IDDFS)
-def iddfs(grid, start, goals, update_gui=None):
+def iddfs(grid, start, goals, update_gui=None, clear_gui=None):
 
     def dls(node, depth, path, visited): # Depth-limited search function, to be called recursively by the IDDFS function
     # Essentially DFS but simplified and modified to have a depth limit
@@ -270,6 +270,7 @@ def iddfs(grid, start, goals, update_gui=None):
         path = dls(start, depth, [start], visited)  # Perform depth-limited search
         if path is not None:
             return path, len(visited)  # Return path and the number of unique nodes visited
+        clear_gui()
 
     return None, 0  # If no path is found within the limits
 

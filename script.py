@@ -35,7 +35,6 @@ def convert_path_to_directions(path):
     
     return directions
 
-
 def main():
     if len(sys.argv) != 3:
         print("Usage: python script.py <input_file> <algorithm>")
@@ -72,9 +71,12 @@ def main():
     def update_gui(current, visited):
         grid_display.update_search_cells(visited)  # Update the light green searched cells
         grid_display.update_pathfinding_cell(current)  # Update the current pathfinding cell
-        time.sleep(0.2)  # Delay for visualization
-
-    path, node_count = algorithm(grid, start_position, goals, update_gui)
+        time.sleep(0.1)  # Delay for visualization
+    
+    def clear_gui():
+        grid_display.reset()  # Reset the grid to its initial state
+        
+    path, node_count = algorithm(grid, start_position, goals, update_gui, clear_gui)
 
     # Display the input file and algorithm name, nested if for CUS1 and CUS2 to specify algorithm
     if algorithm_name.upper() == "CUS1":
