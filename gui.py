@@ -10,7 +10,7 @@ class GridDisplay:
         self.goals = goals if goals else []
         self.walls = walls if walls else []
         self.final_path = []  # Store the final path for re-drawing after resize
-        self.visited_cells = []  # Store visited cells to re-render them
+        self.visited_cells = [] # Store visited cells to re-render them
         self.current_pathfinding_cell = None  # Store the current pathfinding cell
         self.cell_size = 50  # Default size of each cell in pixels
 
@@ -113,11 +113,8 @@ class GridDisplay:
             y2 = path[i + 1][1] * self.cell_size + self.cell_size // 2
             self.canvas.create_line(x1, y1, x2, y2, fill='blue', width=2)
 
-        self.root.update()
-
     def update_potential_nodes(self, potential_nodes):
         """Highlight potential nodes being evaluated."""
-        
         for node in potential_nodes:
             x1 = node[0] * self.cell_size
             y1 = node[1] * self.cell_size

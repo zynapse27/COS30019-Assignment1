@@ -91,10 +91,14 @@ def main():
 
     # Final update for the GUI after reaching the goal
     if path:
-        grid_display.draw_final_path(path)  # Draw the blue line representing the final path
-
         # Get the reached goal from the last element of the path
         reached_goal = path[-1]
+
+        grid_display.draw_final_path(path)  # Draw the blue line representing the final path
+
+        # Update the pathfinding cell to render it on top of the path
+        grid_display.update_pathfinding_cell(reached_goal)
+
         print(f"<Node {reached_goal}> {node_count}")  # Display the coordinates of the reached goal
 
         directions = convert_path_to_directions(path)
