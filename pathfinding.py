@@ -96,12 +96,11 @@ def manhattan_distance(node, goals):
 
 # Greedy Best-First Search (GBFS)
 def gbfs(grid, start, goals, update_gui=None, clear_gui=None):
-
     
     rows, cols = len(grid), len(grid[0])  # Get grid dimensions
     walls = {(c, r) for r in range(rows) for c in range(cols) if grid[r][c] == 'W'}  # Collect wall positions
     
-    # Priority queue for GBFS: Each element is a tuple (priority, (current_node, path_taken))
+    # Priority queue for GBFS: Each element is a tuple (priority, (current_node))
     priority_queue = []
     heapq.heappush(priority_queue, (0, start))  # Initial node has 0 priority
     came_from = {start: None}  # To reconstruct the path
@@ -112,7 +111,7 @@ def gbfs(grid, start, goals, update_gui=None, clear_gui=None):
 
     while priority_queue:
         # Pop the node with the lowest heuristic cost (the best node)
-        _, current = heapq.heappop(priority_queue)
+        current_priority, current = heapq.heappop(priority_queue)  # Unpack priority and current node
 
         # Mark the current node as visited
         if current in visited:
