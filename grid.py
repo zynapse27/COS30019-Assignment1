@@ -20,5 +20,3 @@ def create_grid(rows, cols, markers=None, goals=None, walls=None):
                     grid[r][c] = 'W'  # W for Wall
 
     return grid
-
-

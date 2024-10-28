@@ -1,4 +1,5 @@
 # gui.py
+
 import tkinter as tk
 
 class GridDisplay:

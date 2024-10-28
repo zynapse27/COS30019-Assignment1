@@ -1,3 +1,5 @@
+# script.py
+
 import sys
 from file_parser import read_input_file
 from grid import create_grid
