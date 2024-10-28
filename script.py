@@ -68,9 +68,10 @@ def main():
         sys.exit(1)
 
     # Call the selected algorithm to find a path to one of the goal cells
-    def update_gui(current, visited):
-        grid_display.update_search_cells(visited)  # Update the light green searched cells
-        grid_display.update_pathfinding_cell(current)  # Update the current pathfinding cell
+    def update_gui(current, visited, potential_nodes):
+        grid_display.update_search_cells(visited)  # Update visited cells
+        grid_display.update_pathfinding_cell(current)  # Update current cell
+        grid_display.update_potential_nodes(potential_nodes)  # Update potential nodes
         time.sleep(0.1)  # Delay for visualization
     
     def clear_gui():
@@ -89,7 +90,7 @@ def main():
     # Final update for the GUI after reaching the goal
     if path:
         grid_display.draw_final_path(path)  # Draw the blue line representing the final path
-        update_gui(path[-1], []) # Update the GUI again so path cell appears on top of path line
+        update_gui(path[-1], [], []) # Update the GUI again so path cell appears on top of path line
 
         # Get the reached goal from the last element of the path
         reached_goal = path[-1]

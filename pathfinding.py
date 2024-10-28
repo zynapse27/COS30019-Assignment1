@@ -26,7 +26,8 @@ def dfs(grid, start, goals, update_gui=None, clear_gui=None):
         
         # Update the GUI with the current position and visited nodes (if a GUI callback is provided)
         if update_gui:
-            update_gui(current, visited)
+            potential_nodes = get_neighbors(current, walls, rows, cols)
+            update_gui(current, visited, potential_nodes)
         
         # Check if the current node is a goal
         if current in goals:

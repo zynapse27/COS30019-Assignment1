@@ -16,8 +16,8 @@ class GridDisplay:
         self.root = tk.Tk()
 
         # Set the default window size (Width x Height)
-        default_width = 600  # Set your desired default width
-        default_height = 275  # Set your desired default height
+        default_width = 600 
+        default_height = 275 
         self.root.geometry(f"{default_width}x{default_height}")
 
         self.canvas = tk.Canvas(self.root)
@@ -83,7 +83,8 @@ class GridDisplay:
                 y1 = cell[1] * self.cell_size
                 x2 = x1 + self.cell_size
                 y2 = y1 + self.cell_size
-                self.canvas.create_rectangle(x1, y1, x2, y2, fill='lightgreen', outline='')
+                self.visited_cells.add(cell)
+                self.canvas.create_rectangle(x1, y1, x2, y2, fill='lightgreen', outline='black', tags="visited_cell")
 
         self.draw_grid_lines()
 
@@ -110,6 +111,18 @@ class GridDisplay:
             x2 = path[i + 1][0] * self.cell_size + self.cell_size // 2
             y2 = path[i + 1][1] * self.cell_size + self.cell_size // 2
             self.canvas.create_line(x1, y1, x2, y2, fill='blue', width=2)
+
+        self.root.update()
+
+    def update_potential_nodes(self, potential_nodes):
+        """Highlight potential nodes being evaluated."""
+        for node in potential_nodes:
+            x1 = node[0] * self.cell_size
+            y1 = node[1] * self.cell_size
+            x2 = x1 + self.cell_size
+            y2 = y1 + self.cell_size
+            if node not in self.goals and node not in self.markers and node not in self.visited_cells:
+                self.canvas.create_rectangle(x1, y1, x2, y2, fill='yellow', outline='black', tags="potential_node")
 
         self.root.update()
 
