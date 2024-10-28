@@ -72,11 +72,18 @@ def main():
     def update_gui(current, visited):
         grid_display.update_search_cells(visited)  # Update the light green searched cells
         grid_display.update_pathfinding_cell(current)  # Update the current pathfinding cell
-        time.sleep(0.1)  # Delay for visualization (adjust as needed)
+        time.sleep(0.1)  # Delay for visualization
 
     path, node_count = algorithm(grid, start_position, goals, update_gui)
 
-    print(sys.argv[1], algorithm_name.upper())  # Display the input file and algorithm name
+    # Display the input file and algorithm name, nested if for CUS1 and CUS2 to specify algorithm
+    if algorithm_name.upper() == "CUS1":
+        print(sys.argv[1], "CUS1 (IDDFS)")  # Display the input file and algorithm name
+    elif algorithm_name.upper() == "CUS2":
+        print(sys.argv[1], "not implemented")
+    else:
+        print(sys.argv[1], algorithm_name.upper())  # Display the input file and algorithm name
+
     # Final update for the GUI after reaching the goal
     if path:
         grid_display.draw_final_path(path)  # Draw the blue line representing the final path
