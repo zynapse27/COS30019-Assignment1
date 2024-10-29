@@ -268,6 +268,98 @@ def iddfs(grid, start, goals, update_gui=None, clear_gui=None):
 
     return None, 0  # If no path is found within the limits
 
+# Custom 2: Bidirectional A* Search
+def bidirectional_astar(grid, start, goals, update_gui=None, clear_gui=None):
+    rows, cols = len(grid), len(grid[0])  # Get grid dimensions
+    walls = {(c, r) for r in range(rows) for c in range(cols) if grid[r][c] == 'W'}  # Collect wall positions
+
+    # Priority queues for A* (one for each direction)
+    open_list_forward = []
+    open_list_backward = []
+
+    # Initialize both start points in priority queues
+    start_f_value = manhattan_distance(start, goals)
+    heapq.heappush(open_list_forward, (start_f_value, 0, start, [start]))  # (f(n), g(n), position, path)
+    goal_position = goals[0]  # For Bi-A*, assume a single goal for simplicity
+    heapq.heappush(open_list_backward, (start_f_value, 0, goal_position, [goal_position]))
+
+    # Data structures to track paths and visited nodes
+    forward_came_from = {start: None}
+    backward_came_from = {goal_position: None}
+    forward_g_score = {start: 0}
+    backward_g_score = {goal_position: 0}
+    visited_forward = set()
+    visited_backward = set()
+    node_count = 0
+
+    while open_list_forward and open_list_backward:
+        # Expand the forward search
+        current_f_forward, current_g_forward, current_forward, path_forward = heapq.heappop(open_list_forward)
+        if current_forward in visited_forward:
+            continue
+        visited_forward.add(current_forward)
+
+        # Expand the backward search
+        current_f_backward, current_g_backward, current_backward, path_backward = heapq.heappop(open_list_backward)
+        if current_backward in visited_backward:
+            continue
+        visited_backward.add(current_backward)
+
+        # Increment node count for both searches
+        node_count += 2
+
+        # GUI updates for both directions
+        if update_gui:
+            update_gui(current_forward, visited_forward, get_neighbors(current_forward, walls, rows, cols))
+            update_gui(current_backward, visited_backward, get_neighbors(current_backward, walls, rows, cols))
+
+        # Check for intersection
+        if current_forward in visited_backward:
+            return reconstruct_path_bidirectional(forward_came_from, backward_came_from, current_forward), node_count
+        if current_backward in visited_forward:
+            return reconstruct_path_bidirectional(forward_came_from, backward_came_from, current_backward), node_count
+
+        # Get neighbors and expand for forward direction
+        for neighbor in get_neighbors(current_forward, walls, rows, cols):
+            tentative_g_score = forward_g_score[current_forward] + 1
+            if neighbor not in forward_g_score or tentative_g_score < forward_g_score[neighbor]:
+                forward_came_from[neighbor] = current_forward
+                forward_g_score[neighbor] = tentative_g_score
+                f_score = tentative_g_score + manhattan_distance(neighbor, goals)
+                heapq.heappush(open_list_forward, (f_score, tentative_g_score, neighbor, path_forward + [neighbor]))
+
+        # Get neighbors and expand for backward direction
+        for neighbor in get_neighbors(current_backward, walls, rows, cols):
+            tentative_g_score = backward_g_score[current_backward] + 1
+            if neighbor not in backward_g_score or tentative_g_score < backward_g_score[neighbor]:
+                backward_came_from[neighbor] = current_backward
+                backward_g_score[neighbor] = tentative_g_score
+                f_score = tentative_g_score + manhattan_distance(neighbor, [start])
+                heapq.heappush(open_list_backward, (f_score, tentative_g_score, neighbor, path_backward + [neighbor]))
+
+    # If no path is found
+    return None, node_count
+
+# Helper function to reconstruct path for bidirectional A*
+def reconstruct_path_bidirectional(forward_came_from, backward_came_from, meeting_point):
+    # Reconstruct the forward path
+    path_forward = []
+    current = meeting_point
+    while current is not None:
+        path_forward.append(current)
+        current = forward_came_from[current]
+    path_forward.reverse()
+
+    # Reconstruct the backward path
+    path_backward = []
+    current = meeting_point
+    while current is not None:
+        path_backward.append(current)
+        current = backward_came_from[current]
+
+    # Combine the forward and backward paths
+    return path_forward + path_backward[1:]
+
 #Helper function to get valid neighbors of a cell that are not walls.
 def get_neighbors(cell, walls, rows, cols):
     col, row = cell

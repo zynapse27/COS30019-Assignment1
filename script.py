@@ -14,7 +14,8 @@ def select_algorithm(algorithm_name):
         'BFS': pathfinding.bfs,
         'GBFS': pathfinding.gbfs,
         'ASTAR': pathfinding.astar,
-        'CUS1': pathfinding.iddfs
+        'CUS1': pathfinding.iddfs,
+        'CUS2': pathfinding.bidirectional_astar
     }
     return algorithms.get(algorithm_name.upper(), None)
 
@@ -40,7 +41,7 @@ def convert_path_to_directions(path):
 def main():
     if len(sys.argv) != 3:
         print("Usage: python script.py <input_file> <algorithm>")
-        print("Available algorithms: DFS, BFS, GBFS, ASTAR, CUS1")
+        print("Available algorithms: DFS, BFS, GBFS, ASTAR, CUS1, CUS2")
         sys.exit(1)
 
     input_file = sys.argv[1]
@@ -66,7 +67,7 @@ def main():
     algorithm = select_algorithm(algorithm_name)
     if algorithm is None:
         print(f"Error: Algorithm '{algorithm_name}' not recognized.")
-        print("Available algorithms: DFS, BFS, GBFS, ASTAR")
+        print("Available algorithms: DFS, BFS, GBFS, ASTAR, CUS1, CUS2")
         sys.exit(1)
 
     # Call the selected algorithm to find a path to one of the goal cells
@@ -75,7 +76,7 @@ def main():
         grid_display.update_pathfinding_cell(current)  # Update current cell
         grid_display.update_potential_nodes(potential_nodes)  # Update potential nodes
         time.sleep(0.1)  # Delay for visualization
-    
+
     def clear_gui():
         grid_display.reset()  # Reset the grid to its initial state
         
@@ -85,7 +86,7 @@ def main():
     if algorithm_name.upper() == "CUS1":
         print(sys.argv[1], "CUS1 (IDDFS)")  # Display the input file and algorithm name
     elif algorithm_name.upper() == "CUS2":
-        print(sys.argv[1], "not implemented")
+        print(sys.argv[1], "CUS2 (Bidirectional A*)")
     else:
         print(sys.argv[1], algorithm_name.upper())  # Display the input file and algorithm name
 
