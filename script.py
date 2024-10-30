@@ -143,6 +143,7 @@ def main():
             print("\nAll goals reached!")
             print(f"Total nodes expanded: {total_node_count}")
             print(f"Total path length: {len(final_path)}")
+            print(f"Goals reached: {goals}")
             print(f"Final path to all goals: {convert_path_to_directions(final_path)}")
 
 
