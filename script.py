@@ -81,10 +81,11 @@ def main():
     def clear_gui():
         grid_display.reset()  # Reset the grid to its initial state
 
-    # Find paths to goals
+    # Find paths to all goals
     current_position = start_position
     remaining_goals = goals[:]
     total_node_count = 0
+    final_path = []
 
     # Display the input file and algorithm name, nested if for CUS1 and CUS2 to specify algorithm
     if algorithm_name.upper() == "CUS1":
@@ -95,10 +96,10 @@ def main():
         print(sys.argv[1], algorithm_name.upper())  # Display the input file and algorithm name
 
     if find_all_goals:
-        print("Finding all goals...")
+        print("Finding path to all goals...")
 
     while remaining_goals:
-
+        # Find the path to the closest goal
         path, node_count = algorithm(grid, current_position, remaining_goals, update_gui, clear_gui)
         total_node_count += node_count
         total_goal_count = len(goals) - len(remaining_goals)
@@ -110,8 +111,11 @@ def main():
             if find_all_goals:
                 print(f"\nGoal {total_goal_count + 1} reached!") 
 
-            grid_display.draw_final_path(path)  # Draw the blue line representing the final path
-            grid_display.update_pathfinding_cell(reached_goal)  # Update the pathfinding cell
+            # Add the found path to the final path, excluding the start point if it's already in the path
+            if final_path:
+                final_path.extend(path[1:])
+            else:
+                final_path.extend(path)
 
             print(f"<Node {reached_goal}> {node_count}")  # Display the coordinates of the reached goal
 
@@ -129,6 +133,18 @@ def main():
         else:
             print("No goal is reachable.", total_node_count)  # Display the node count when no goal is reachable
             break
+
+    # Draw the entire final path if all goals are found
+    if final_path:
+        grid_display.draw_final_path(final_path)  # Draw the blue line representing the entire final path
+
+        if find_all_goals:
+            grid_display.update_pathfinding_cell(final_path[-1])  # Updates path cell again; mainly for Bidirectional A*
+            print("\nAll goals reached!")
+            print(f"Total nodes expanded: {total_node_count}")
+            print(f"Total path length: {len(final_path)}")
+            print(f"Final path: {convert_path_to_directions(final_path)}")
+
 
     # Keep the GUI open after pathfinding is complete
     grid_display.root.mainloop()

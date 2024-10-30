@@ -231,6 +231,8 @@ def astar(grid, start, goals, update_gui=None, clear_gui=None):
 # Custom 1: Iterative Deepening Depth-First Search (IDDFS)
 def iddfs(grid, start, goals, update_gui=None, clear_gui=None):
 
+    print("") # Spacing for readability
+
     def dls(current, depth, path, visited): # Depth-limited search function, to be called recursively by the IDDFS function
     # Essentially DFS but simplified and modified to have a depth limit
 
