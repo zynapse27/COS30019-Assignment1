@@ -4,7 +4,6 @@ import sys
 from file_parser import read_input_file
 from grid import create_grid
 from gui import display_grid_gui
-from gui import SearchTreeDisplay
 import pathfinding
 import time
 
@@ -80,11 +79,8 @@ def main():
 
     def clear_gui():
         grid_display.reset()  # Reset the grid to its initial state
-
-    def track_tree(parent_map):
-        SearchTreeDisplay(parent_map)
         
-    path, node_count = algorithm(grid, start_position, goals, update_gui, clear_gui, track_tree=track_tree)
+    path, node_count = algorithm(grid, start_position, goals, update_gui, clear_gui)
 
     # Display the input file and algorithm name, nested if for CUS1 and CUS2 to specify algorithm
     if algorithm_name.upper() == "CUS1":

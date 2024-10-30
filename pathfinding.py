@@ -3,7 +3,7 @@
 import heapq
 
 # Depth-First Search (DFS)
-def dfs(grid, start, goals, update_gui=None, clear_gui=None, track_tree=None):
+def dfs(grid, start, goals, update_gui=None, clear_gui=None):
 
     rows, cols = len(grid), len(grid[0])  # Get grid dimensions
     walls = {(c, r) for r in range(rows) for c in range(cols) if grid[r][c] == 'W'}  # Collect wall positions
@@ -15,8 +15,6 @@ def dfs(grid, start, goals, update_gui=None, clear_gui=None, track_tree=None):
     visited = set()
     node_count = 0  # Counter for nodes created
 
-    parent_map = {start: None}  # To track the parent of each node for the search tree visualization
-
     while stack:
         # Pop the most recent node (LIFO order)
         current, path = stack.pop()
@@ -27,10 +25,6 @@ def dfs(grid, start, goals, update_gui=None, clear_gui=None, track_tree=None):
         
         visited.add(current)
         node_count += 1  # Increment the node counter
-
-         # Track the parent node
-        if len(path) > 1:
-            parent_map[current] = path[-2]  # Add parent to the tree
         
         # Update the GUI with the current position, visited nodes, and potential nodes (if a GUI callback is provided)
         if update_gui:
@@ -39,9 +33,6 @@ def dfs(grid, start, goals, update_gui=None, clear_gui=None, track_tree=None):
         
         # Check if the current node is a goal
         if current in goals:
-            # Passes the parent map if a goal is found
-            if track_tree:
-                track_tree(parent_map)
             return path, node_count  # Return the path to the goal and the node count
         
         # Get neighbors using the provided get_neighbors function
@@ -51,17 +42,12 @@ def dfs(grid, start, goals, update_gui=None, clear_gui=None, track_tree=None):
         for neighbor in reversed(neighbors):
             if neighbor not in visited:
                 stack.append((neighbor, path + [neighbor]))
-                parent_map[neighbor] = current  # Track the parent node
-        
-    # Passes the parent map if no goal is found
-    if track_tree:
-        track_tree(parent_map)
     
     # If the stack is empty and no goal was found
     return None, node_count  # Return None for path and the node count
 
 # Breadth-First Search (BFS)
-def bfs(grid, start, goals, update_gui=None, clear_gui=None, track_tree=None):
+def bfs(grid, start, goals, update_gui=None, clear_gui=None):
     
     rows, cols = len(grid), len(grid[0])  # Get grid dimensions
     walls = {(c, r) for r in range(rows) for c in range(cols) if grid[r][c] == 'W'}  # Collect wall positions
@@ -72,8 +58,6 @@ def bfs(grid, start, goals, update_gui=None, clear_gui=None, track_tree=None):
     # Set to keep track of visited nodes
     visited = set()
     node_count = 0  # Counter for nodes created
-
-    parent_map = {}  # To track the parent of each node for the search
 
     while queue:
         # Dequeue the oldest node (FIFO order)
@@ -86,10 +70,6 @@ def bfs(grid, start, goals, update_gui=None, clear_gui=None, track_tree=None):
         visited.add(current)
         node_count += 1  # Increment the node counter
         
-         # Track the parent node
-        if len(path) > 1:
-            parent_map[current] = path[-2]  # Add parent to the tree
-        
         # Update the GUI with the current position, visited nodes, and potential nodes (if a GUI callback is provided)
         if update_gui:
             potential_nodes = get_neighbors(current, walls, rows, cols)
@@ -97,9 +77,6 @@ def bfs(grid, start, goals, update_gui=None, clear_gui=None, track_tree=None):
         
         # Check if the current node is a goal
         if current in goals:
-             # Passes the parent map if a goal is found
-            if track_tree:
-                track_tree(parent_map)
             return path, node_count  # Return the path to the goal and the node count
         
         # Get neighbors using the provided get_neighbors function
@@ -109,10 +86,6 @@ def bfs(grid, start, goals, update_gui=None, clear_gui=None, track_tree=None):
         for neighbor in neighbors:
             if neighbor not in visited:
                 queue.append((neighbor, path + [neighbor]))
-            
-    # Passes the parent map if no goal is found
-    if track_tree:
-        track_tree(parent_map)
     
     # If the queue is empty and no goal was found
     return None, node_count  # Return None for path and the node count
@@ -124,7 +97,7 @@ def manhattan_distance(node, goals):
     return min(abs(node[0] - goal[0]) + abs(node[1] - goal[1]) for goal in goals)
 
 # Greedy Best-First Search (GBFS)
-def gbfs(grid, start, goals, update_gui=None, clear_gui=None, track_tree=None):
+def gbfs(grid, start, goals, update_gui=None, clear_gui=None):
     
     rows, cols = len(grid), len(grid[0])  # Get grid dimensions
     walls = {(c, r) for r in range(rows) for c in range(cols) if grid[r][c] == 'W'}  # Collect wall positions
@@ -133,10 +106,10 @@ def gbfs(grid, start, goals, update_gui=None, clear_gui=None, track_tree=None):
     priority_queue = []
     heapq.heappush(priority_queue, (0, start))  # Initial node has 0 priority
     came_from = {start: None}  # To reconstruct the path
+    node_count = 0  # Counter for nodes created
 
     # Set to keep track of visited nodes
     visited = set()
-    node_count = 0  # Counter for nodes created
 
     while priority_queue:
         # Pop the node with the lowest heuristic cost (the best node)
@@ -180,7 +153,7 @@ def gbfs(grid, start, goals, update_gui=None, clear_gui=None, track_tree=None):
     return None, node_count  # Return None for path and the node count
 
 # A* Search Algorithm
-def astar(grid, start, goals, update_gui=None, clear_gui=None, track_tree=None):
+def astar(grid, start, goals, update_gui=None, clear_gui=None):
     rows, cols = len(grid), len(grid[0])  # Get grid dimensions
     walls = {(c, r) for r in range(rows) for c in range(cols) if grid[r][c] == 'W'}  # Collect wall positions
 
@@ -247,7 +220,7 @@ def astar(grid, start, goals, update_gui=None, clear_gui=None, track_tree=None):
 
 
 # Custom 1: Iterative Deepening Depth-First Search (IDDFS)
-def iddfs(grid, start, goals, update_gui=None, clear_gui=None, track_tree=None):
+def iddfs(grid, start, goals, update_gui=None, clear_gui=None):
 
     def dls(current, depth, path, visited): # Depth-limited search function, to be called recursively by the IDDFS function
     # Essentially DFS but simplified and modified to have a depth limit
@@ -296,7 +269,7 @@ def iddfs(grid, start, goals, update_gui=None, clear_gui=None, track_tree=None):
     return None, 0  # If no path is found within the limits
 
 # Custom 2: Bidirectional A* Search
-def bidirectional_astar(grid, start, goals, update_gui=None, clear_gui=None, track_tree=None):
+def bidirectional_astar(grid, start, goals, update_gui=None, clear_gui=None):
     rows, cols = len(grid), len(grid[0])  # Get grid dimensions
     walls = {(c, r) for r in range(rows) for c in range(cols) if grid[r][c] == 'W'}  # Collect wall positions
 
@@ -318,7 +291,7 @@ def bidirectional_astar(grid, start, goals, update_gui=None, clear_gui=None, tra
     visited_forward = set()
     visited_backward = set()
     node_count = 0
-    
+
     while open_list_forward and open_list_backward:
         # Expand the forward search
         current_f_forward, current_g_forward, current_forward, path_forward = heapq.heappop(open_list_forward)

@@ -20,7 +20,6 @@ class GridDisplay:
         default_width = 600 
         default_height = 275 
         self.root.geometry(f"{default_width}x{default_height}")
-        self.root.title("Search Grid Visualization")
 
         self.canvas = tk.Canvas(self.root)
         self.canvas.pack(fill=tk.BOTH, expand=True)
@@ -136,84 +135,3 @@ def display_grid_gui(rows, cols, markers=None, goals=None, walls=None):
     grid_display = GridDisplay(rows, cols, markers, goals, walls)
 
     return grid_display  # Return the grid display instance for updating
-
-class SearchTreeDisplay:
-    def __init__(self, parent_map):
-        self.parent_map = parent_map
-        self.root = tk.Toplevel()
-        self.root.title("Search Tree Visualization")
-
-        # Set default window size and position (500x925, on the right half of the screen)
-        screen_width = self.root.winfo_screenwidth()
-        screen_height = self.root.winfo_screenheight()
-        
-        # Position on the right half of the screen
-        x_position = int(screen_width * 0.75) - 250  # Adjust to center on the right half
-        y_position = int((screen_height - 800) / 2)  # Center vertically
-
-        # Apply window geometry
-        self.root.geometry(f"500x800+{x_position}+{y_position}")
-
-        # Canvas setup with scroll region
-        self.canvas = tk.Canvas(self.root, bg='white')
-        self.canvas.pack(fill=tk.BOTH, expand=True)
-        self.canvas.bind("<MouseWheel>", self.zoom)  # Bind scroll for zooming
-        self.canvas.bind("<ButtonPress-1>", self.start_pan)  # Bind mouse press for panning
-        self.canvas.bind("<B1-Motion>", self.pan)  # Bind motion for panning
-
-        # Initial drawing settings
-        self.node_radius = 25  # Increased node size
-        self.zoom_level = 1.0
-        self.pan_start_x, self.pan_start_y = 0, 0
-        self.offset_x, self.offset_y = 250, 30  # Adjust starting offsets to center the tree in the window
-
-        # Draw the tree with default positions and settings
-        self.draw_tree()
-
-    def zoom(self, event):
-        """Zoom in or out with mouse scroll wheel."""
-        scale = 1.1 if event.delta > 0 else 0.9  # Zoom factor
-        self.zoom_level *= scale
-        self.canvas.scale("all", event.x, event.y, scale, scale)
-        self.update_scroll_region()
-
-    def start_pan(self, event):
-        """Store the initial coordinates when mouse button is pressed."""
-        self.pan_start_x, self.pan_start_y = event.x, event.y
-
-    def pan(self, event):
-        """Pan the view by dragging with the mouse button 1."""
-        dx = event.x - self.pan_start_x
-        dy = event.y - self.pan_start_y
-        self.canvas.move("all", dx, dy)
-        self.pan_start_x, self.pan_start_y = event.x, event.y
-        self.update_scroll_region()
-
-    def update_scroll_region(self):
-        """Update the scroll region to fit the current view."""
-        bbox = self.canvas.bbox("all")
-        self.canvas.config(scrollregion=bbox)
-
-    def draw_tree(self):
-        positions = {}
-        x, y = self.offset_x, self.offset_y
-        start_node = next(iter(self.parent_map))  # Arbitrarily choose starting node
-        self._draw_node(start_node, x, y, positions, depth=1)
-
-    def _draw_node(self, node, x, y, positions, depth):
-        positions[node] = (x, y)
-        node_tag = f"node_{node}"  # Unique tag for each node
-
-        # Draw node with updated radius
-        self.canvas.create_oval(x - self.node_radius, y - self.node_radius, x + self.node_radius, y + self.node_radius,
-                                fill='lightblue', tags=node_tag)
-        self.canvas.create_text(x, y, text=str(node), font=("Arial", 12, "bold"), tags=node_tag)
-
-        # Find and draw connections to child nodes
-        children = [child for child, parent in self.parent_map.items() if parent == node]
-        if children:
-            next_y = y + 100  # Increased vertical spacing
-            for i, child in enumerate(children):
-                next_x = x + (i - len(children) // 2) * 100  # Horizontal spacing between children
-                self.canvas.create_line(x, y + self.node_radius, next_x, next_y - self.node_radius, fill='black', tags=node_tag)
-                self._draw_node(child, next_x, next_y, positions, depth + 1)
