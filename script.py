@@ -73,9 +73,9 @@ def main():
 
     # Define GUI update functions
     def update_gui(current, visited, potential_nodes):
+        grid_display.update_potential_nodes(potential_nodes)  # Update potential nodes
         grid_display.update_search_cells(visited)  # Update visited cells
         grid_display.update_pathfinding_cell(current)  # Update current cell
-        grid_display.update_potential_nodes(potential_nodes)  # Update potential nodes
         time.sleep(0.1)  # Delay for visualization
 
     def clear_gui():
