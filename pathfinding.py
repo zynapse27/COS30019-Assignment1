@@ -326,10 +326,11 @@ def bidirectional_astar(grid, start, goals, update_gui=None, clear_gui=None):
             update_gui(current_backward, visited_backward, get_neighbors(current_backward, walls, rows, cols))
 
         # Check for intersection
-        if current_forward in visited_backward:
-            return reconstruct_path_bidirectional(forward_came_from, backward_came_from, current_forward), node_count
-        if current_backward in visited_forward:
-            return reconstruct_path_bidirectional(forward_came_from, backward_came_from, current_backward), node_count
+        if current_forward in visited_backward or current_backward in visited_forward:
+            # Decrement node_count by 1 to avoid double-counting the meeting point
+            node_count -= 1
+            meeting_point = current_forward if current_forward in visited_backward else current_backward
+            return reconstruct_path_bidirectional(forward_came_from, backward_came_from, meeting_point), node_count
 
         # Get neighbors and expand for forward direction
         for neighbor in get_neighbors(current_forward, walls, rows, cols):
