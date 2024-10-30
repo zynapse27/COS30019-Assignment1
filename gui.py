@@ -112,7 +112,7 @@ class GridDisplay:
             y1 = path[i][1] * self.cell_size + self.cell_size // 2
             x2 = path[i + 1][0] * self.cell_size + self.cell_size // 2
             y2 = path[i + 1][1] * self.cell_size + self.cell_size // 2
-            self.canvas.create_line(x1, y1, x2, y2, fill='blue', width=2)
+            self.canvas.create_line(x1, y1, x2, y2, fill='purple', width=5)
 
     def update_potential_nodes(self, potential_nodes):
         """Highlight potential nodes being evaluated."""
