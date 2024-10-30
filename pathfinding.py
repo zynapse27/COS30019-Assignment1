@@ -247,9 +247,9 @@ def iddfs(grid, start, goals, update_gui=None, clear_gui=None):
         visited.add(current)
         
         # Update the GUI with the current position, visited nodes, and potential nodes (if a GUI callback is provided)
-        # if update_gui:
-        #     potential_nodes = get_neighbors(current, walls, rows, cols)
-        #     update_gui(current, visited, potential_nodes)
+        if update_gui:
+            potential_nodes = get_neighbors(current, walls, rows, cols)
+            update_gui(current, visited, potential_nodes)
         
         # Check if the current node is a goal
         if current in goals:
