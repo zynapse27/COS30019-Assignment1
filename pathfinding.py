@@ -5,6 +5,8 @@ import heapq
 # Depth-First Search (DFS)
 def dfs(grid, start, goals, update_gui=None, clear_gui=None):
 
+    clear_gui()  # Clear the GUI before starting the search, in case there are multiple to be done
+
     rows, cols = len(grid), len(grid[0])  # Get grid dimensions
     walls = {(c, r) for r in range(rows) for c in range(cols) if grid[r][c] == 'W'}  # Collect wall positions
     
@@ -49,6 +51,8 @@ def dfs(grid, start, goals, update_gui=None, clear_gui=None):
 # Breadth-First Search (BFS)
 def bfs(grid, start, goals, update_gui=None, clear_gui=None):
     
+    clear_gui()  # Clear the GUI before starting the search, in case there are multiple to be done
+
     rows, cols = len(grid), len(grid[0])  # Get grid dimensions
     walls = {(c, r) for r in range(rows) for c in range(cols) if grid[r][c] == 'W'}  # Collect wall positions
     
@@ -98,6 +102,8 @@ def manhattan_distance(node, goals):
 
 # Greedy Best-First Search (GBFS)
 def gbfs(grid, start, goals, update_gui=None, clear_gui=None):
+
+    clear_gui()  # Clear the GUI before starting the search, in case there are multiple to be done
     
     rows, cols = len(grid), len(grid[0])  # Get grid dimensions
     walls = {(c, r) for r in range(rows) for c in range(cols) if grid[r][c] == 'W'}  # Collect wall positions
@@ -154,6 +160,9 @@ def gbfs(grid, start, goals, update_gui=None, clear_gui=None):
 
 # A* Search Algorithm
 def astar(grid, start, goals, update_gui=None, clear_gui=None):
+
+    clear_gui()  # Clear the GUI before starting the search, in case there are multiple to be done
+
     rows, cols = len(grid), len(grid[0])  # Get grid dimensions
     walls = {(c, r) for r in range(rows) for c in range(cols) if grid[r][c] == 'W'}  # Collect wall positions
 
@@ -270,6 +279,9 @@ def iddfs(grid, start, goals, update_gui=None, clear_gui=None):
 
 # Custom 2: Bidirectional A* Search
 def bidirectional_astar(grid, start, goals, update_gui=None, clear_gui=None):
+
+    clear_gui()  # Clear the GUI before starting the search, in case there are multiple to be done
+
     rows, cols = len(grid), len(grid[0])  # Get grid dimensions
     walls = {(c, r) for r in range(rows) for c in range(cols) if grid[r][c] == 'W'}  # Collect wall positions
 

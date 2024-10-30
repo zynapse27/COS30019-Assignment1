@@ -39,13 +39,14 @@ def convert_path_to_directions(path):
     return directions
 
 def main():
-    if len(sys.argv) != 3:
-        print("Usage: python script.py <input_file> <algorithm>")
+    if len(sys.argv) < 3:
+        print("Usage: python script.py <input_file> <algorithm> [--all-goals]")
         print("Available algorithms: DFS, BFS, GBFS, ASTAR, CUS1, CUS2")
         sys.exit(1)
 
     input_file = sys.argv[1]
     algorithm_name = sys.argv[2]
+    find_all_goals = '--all-goals' in sys.argv
 
     # Read input file
     result = read_input_file(input_file)
@@ -70,7 +71,7 @@ def main():
         print("Available algorithms: DFS, BFS, GBFS, ASTAR, CUS1, CUS2")
         sys.exit(1)
 
-    # Call the selected algorithm to find a path to one of the goal cells
+    # Define GUI update functions
     def update_gui(current, visited, potential_nodes):
         grid_display.update_search_cells(visited)  # Update visited cells
         grid_display.update_pathfinding_cell(current)  # Update current cell
@@ -79,8 +80,11 @@ def main():
 
     def clear_gui():
         grid_display.reset()  # Reset the grid to its initial state
-        
-    path, node_count = algorithm(grid, start_position, goals, update_gui, clear_gui)
+
+    # Find paths to goals
+    current_position = start_position
+    remaining_goals = goals[:]
+    total_node_count = 0
 
     # Display the input file and algorithm name, nested if for CUS1 and CUS2 to specify algorithm
     if algorithm_name.upper() == "CUS1":
@@ -90,22 +94,41 @@ def main():
     else:
         print(sys.argv[1], algorithm_name.upper())  # Display the input file and algorithm name
 
-    # Final update for the GUI after reaching the goal
-    if path:
-        # Get the reached goal from the last element of the path
-        reached_goal = path[-1]
+    if find_all_goals:
+        print("Finding all goals...")
 
-        grid_display.draw_final_path(path)  # Draw the blue line representing the final path
+    while remaining_goals:
 
-        # Update the pathfinding cell to render it on top of the path
-        grid_display.update_pathfinding_cell(reached_goal)
+        path, node_count = algorithm(grid, current_position, remaining_goals, update_gui, clear_gui)
+        total_node_count += node_count
+        total_goal_count = len(goals) - len(remaining_goals)
 
-        print(f"<Node {reached_goal}> {node_count}")  # Display the coordinates of the reached goal
+        if path:
+            # Get the reached goal from the last element of the path
+            reached_goal = path[-1]
 
-        directions = convert_path_to_directions(path)
-        print(directions)  # Display the directions in the console
-    else:
-        print("No goal is reachable.", node_count)  # Display the node count when no goal is reachable
+            if find_all_goals:
+                print(f"\nGoal {total_goal_count + 1} reached!") 
+
+            grid_display.draw_final_path(path)  # Draw the blue line representing the final path
+            grid_display.update_pathfinding_cell(reached_goal)  # Update the pathfinding cell
+
+            print(f"<Node {reached_goal}> {node_count}")  # Display the coordinates of the reached goal
+
+            directions = convert_path_to_directions(path)
+            print(directions)  # Display the directions in the console
+
+            # Remove the reached goal from the list of remaining goals
+            remaining_goals.remove(reached_goal)
+
+            # Update the current position to the reached goal
+            current_position = reached_goal
+
+            if not find_all_goals:
+                break  # Stop after finding the first goal if --all-goals is not specified
+        else:
+            print("No goal is reachable.", total_node_count)  # Display the node count when no goal is reachable
+            break
 
     # Keep the GUI open after pathfinding is complete
     grid_display.root.mainloop()
