@@ -1,6 +1,7 @@
 # script.py
 
 import sys
+import os
 from file_parser import read_input_file
 from grid import create_grid
 from gui import display_grid_gui
@@ -87,15 +88,17 @@ def main():
     total_node_count = 0
     final_path = []
 
-    # Display the input file and algorithm name, nested if for CUS1 and CUS2 to specify algorithm
-    if algorithm_name.upper() == "CUS1":
-        print(sys.argv[1], "CUS1 (IDDFS)")  # Display the input file and algorithm name
-    elif algorithm_name.upper() == "CUS2":
-        print(sys.argv[1], "CUS2 (Bidirectional A*)")
-    else:
-        print(sys.argv[1], algorithm_name.upper())  # Display the input file and algorithm name
+    # Display the input file and algorithm name, if all goals mode is not enabled
+    if find_all_goals == False:
+        if algorithm_name.upper() == "CUS2":
+            os.system('cls' if os.name == 'nt' else 'clear')
+            print(sys.argv[1], "CUS2 (Bidirectional A*)")
+        elif algorithm_name.upper() != "CUS1":
+            os.system('cls' if os.name == 'nt' else 'clear')
+            print(sys.argv[1], algorithm_name.upper())  # Display the input file and algorithm name
 
     if find_all_goals:
+        os.system('cls' if os.name == 'nt' else 'clear')
         print("Finding path to all goals...")
 
     while remaining_goals:
@@ -117,6 +120,11 @@ def main():
             else:
                 final_path.extend(path)
 
+            # CUS1 (IDDFS) name is only printed here as it will constantly print current depth while searching
+            if algorithm_name.upper() == "CUS1" and find_all_goals == False:
+                os.system('cls' if os.name == 'nt' else 'clear')
+                print(sys.argv[1], "CUS1 (IDDFS)")
+                
             print(f"<Node {reached_goal}> {node_count}")  # Display the coordinates of the reached goal
 
             directions = convert_path_to_directions(path)
@@ -139,11 +147,22 @@ def main():
         grid_display.draw_final_path(final_path)  # Draw the blue line representing the entire final path
 
         if find_all_goals:
+            
+            # Assign algorithm name 
+            if algorithm_name.upper() == "CUS1":
+                method = "CUS1 (IDDFS)"
+            elif algorithm_name.upper() == "CUS2":
+                method = "CUS2 (Bidirectional A*)"
+            else:
+                method = algorithm_name.upper()   
+
             grid_display.update_pathfinding_cell(final_path[-1])  # Updates path cell again; mainly for Bidirectional A*
             print("\nAll goals reached!")
-            print(f"Total nodes expanded: {total_node_count}")
-            print(f"Total path length: {len(final_path)}")
+            print("Algorithm:", method)
+            print("Map used:", sys.argv[1])
             print(f"Goals reached: {goals}")
+            print(f"Total nodes expanded: {total_node_count}")
+            print(f"Final path length: {len(final_path)}")       
             print(f"Final path to all goals: {convert_path_to_directions(final_path)}")
 
 

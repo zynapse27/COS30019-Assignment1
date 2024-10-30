@@ -15,6 +15,7 @@ class GridDisplay:
         self.cell_size = 50  # Default size of each cell in pixels
 
         self.root = tk.Tk()
+        self.root.title("Pathfinding Visualization")
 
         # Set the default window size (Width x Height)
         default_width = 600 
