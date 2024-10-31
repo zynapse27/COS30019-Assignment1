@@ -145,6 +145,7 @@ def main():
     # Draw the entire final path if all goals are found
     if final_path:
         grid_display.draw_final_path(final_path)  # Draw the blue line representing the entire final path
+        grid_display.update_pathfinding_cell(final_path[-1])  # Updates path cell again so it appears on top of the final path
 
         if find_all_goals:
             
