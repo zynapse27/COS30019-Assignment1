@@ -2,11 +2,11 @@
 
 import sys
 import os
+import time
 from file_parser import read_input_file
 from grid import create_grid
 from gui import display_grid_gui
 import pathfinding
-import time
 
 def select_algorithm(algorithm_name):
     # Maps the algorithm name to the corresponding function
